@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicEval-AI | CBSE Class 12 Coding Tutor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            color: #334155;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 720px;
+            width: 100%;
+            padding: 36px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-top: 6px;
+        }
+
+        .login-form, .question-container {
+            display: none;
+        }
+
+        .login-form.active, .question-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        textarea {
+            font-family: 'Consolas', 'Courier New', monospace;
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 13px 20px;
+            background: #4f46e5;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #334155;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 22px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #06b6d4);
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .question-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .question-badge {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #1e293b;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .user-badge {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .user-badge strong {
+            color: #0f172a;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            width: auto;
+            border-radius: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #fef2f2;
+            transform: none;
+        }
+
+        .explanation-box {
+            display: none;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #06b6d4;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: #0e7490;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .explanation-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: #334155;
+            font-size: 0.92rem;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 LogicEval-AI</h1>
+            <p>CBSE Class 12 AI-Assisted Coding Logic Tutor</p>
+        </div>
+
+        <!-- Authentication View -->
+        <div id="loginForm" class="login-form active">
+            <div id="loginMessage" class="message"></div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter student username" autocomplete="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password" autocomplete="current-password" required>
+            </div>
+            <button onclick="login()">Sign In / Register</button>
+        </div>
+
+        <!-- Tutor / Question View -->
+        <div id="questionContainer" class="question-container">
+            <div class="user-header">
+                <div class="user-badge">Student: <strong id="currentUser"></strong></div>
+                <button class="logout-btn" onclick="logout()">Sign Out</button>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-label">
+                    <span>Course Progress</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div id="questionBox" class="question-box">
+                <div class="question-badge">Question <span id="questionNum">1</span></div>
+                <div class="question-text" id="questionText">Loading challenge...</div>
+            </div>
+
+            <div id="explanationBox" class="explanation-box">
+                <div class="explanation-title">💡 Logic Verification & Optimal Solution</div>
+                <div id="explanationText" class="explanation-text"></div>
+            </div>
+
+            <div class="form-group" id="answerGroup">
+                <label for="answer">Your Python Solution</label>
+                <textarea id="answer" placeholder="def solution(...):&#10;    # Write your logic here" required></textarea>
+            </div>
+
+            <button id="submitBtn" onclick="submitAnswer()">Verify Logic</button>
+            <button id="nextBtn" class="btn-secondary" onclick="nextQuestion()" style="display:none;">Next Question ➔</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUsername = localStorage.getItem('codelogic_user') || null;
+        let isSubmitted = false;
+
+        function showMessage(elId, text, type = 'info') {
+            const el = document.getElementById(elId);
+            if (el) {
+                el.textContent = text;
+                el.className = `message ${type} show`;
+            }
+        }
+
+        function clearMessage(elId) {
+            const el = document.getElementById(elId);
+            if (el) {
+                el.className = 'message';
+                el.textContent = '';
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            clearMessage('loginMessage');
+
+            if (!username || !password) {
+                showMessage('loginMessage', 'Please provide both username and password.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    currentUsername = username;
+                    localStorage.setItem('codelogic_user', username);
+                    document.getElementById('currentUser').textContent = username;
+                    document.getElementById('loginForm').classList.remove('active');
+                    document.getElementById('questionContainer').classList.add('active');
+                    loadQuestion();
+                    loadProgress();
+                } else {
+                    showMessage('loginMessage', data.error || 'Authentication failed.', 'error');
+                }
+            } catch (err) {
+                showMessage('loginMessage', 'Unable to connect to server: ' + err.message, 'error');
+            }
+        }
+
+        function logout() {
+            currentUsername = null;
+            localStorage.removeItem('codelogic_user');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('questionContainer').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            clearMessage('loginMessage');
+        }
+
+        async function loadQuestion() {
+            if (!currentUsername) return;
+            isSubmitted = false;
+
+            document.getElementById('explanationBox').style.display = 'none';
+            document.getElementById('explanationText').textContent = '';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('nextBtn').style.display = 'none';
+            clearMessage('message');
+
+            try {
+                const res = await fetch(`${API_BASE}/question?username=${encodeURIComponent(currentUsername)}`);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    if (data.completed) {
+                        document.getElementById('questionBox').innerHTML = `
+                            <div style="text-align:center; padding: 20px;">
+                                <h3 style="color:#10b981; margin-bottom:8px;">🎉 Curriculum Completed!</h3>
+                                <p style="color:#64748b;">You have mastered all Python logic challenges in this module.</p>
+                            </div>
+                        `;
+                        document.getElementById('answerGroup').style.display = 'none';
+                        document.getElementById('submitBtn').style.display = 'none';
+                    } else {
+                        document.getElementById('answerGroup').style.display = 'block';
+                        document.getElementById('questionNum').textContent = data.question_number;
+                        document.getElementById('questionText').textContent = data.question;
+                        document.getElementById('answer').value = '';
+                        document.getElementById('answer').disabled = false;
+                    }
+                } else {
+                    showMessage('message', data.error || 'Could not fetch question.', 'error');
+                }
+            } catch (err) {
+                showMessage('message', 'Error loading question: ' + err.message, 'error');
+            }
+        }
+
+        async function loadProgress() {
+            if (!currentUsername) return;
+            try {
+                const res = await fetch(`${API_BASE}/progress?username=${encodeURIComponent(currentUsername)}`);
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const percent = data.progress_percent || 0;
+                    document.getElementById('progressFill').style.width = `${percent}%`;
+                    document.getElementById('progressText').textContent =
+                        `${data.current_question - 1}/${data.total_questions} (${percent}%)`;
+                }
+            } catch (err) {
+                console.error('Progress sync error:', err);
+            }
+        }
+
+        async function submitAnswer() {
+            if (!currentUsername || isSubmitted) return;
+
+            const answer = document.getElementById('answer').value.trim();
+            if (!answer) {
+                showMessage('message', 'Please enter your solution before submitting.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> Analyzing Code Logic...';
+            clearMessage('message');
+
+            try {
+                const res = await fetch(`${API_BASE}/submit-answer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: currentUsername, answer })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    if (data.verification) {
+                        document.getElementById('explanationText').textContent = data.verification;
+                        document.getElementById('explanationBox').style.display = 'block';
+                    }
+
+                    if (data.correct) {
+                        showMessage('message', '✅ Logic Verified: Correct! Your progress has been updated.', 'success');
+                        btn.style.display = 'none';
+                        document.getElementById('nextBtn').style.display = 'block';
+                        isSubmitted = true;
+                        loadProgress();
+                    } else {
+                        showMessage('message', '❌ Logic Needs Improvement. Review the optimal solution below and try again.', 'error');
+                    }
+                } else {
+                    showMessage('message', data.error || 'Failed to verify answer.', 'error');
+                }
+            } catch (err) {
+                showMessage('message', 'Connection error: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Verify Logic';
+            }
+        }
+
+        function nextQuestion() {
+            loadQuestion();
+        }
+
+        // Auto-login if previously active session
+        document.addEventListener('DOMContentLoaded', () => {
+            if (currentUsername) {
+                document.getElementById('currentUser').textContent = currentUsername;
+                document.getElementById('loginForm').classList.remove('active');
+                document.getElementById('questionContainer').classList.add('active');
+                loadQuestion();
+                loadProgress();
+            }
+        });
+    </script>
+</body>
+</html>
